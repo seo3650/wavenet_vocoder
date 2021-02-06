@@ -16,6 +16,8 @@ from nose.plugins.attrib import attr
 from wavenet_vocoder.modules import ResidualConv1dGLU
 from wavenet_vocoder import WaveNet
 
+import soundfile as sf
+
 use_cuda = False
 device = torch.device("cuda" if use_cuda else "cpu")
 
@@ -402,6 +404,7 @@ def test_incremental_forward_correctness():
 
     save_audio = False
     if save_audio:
-        librosa.output.write_wav("target.wav", x_org, sr=sr)
-        librosa.output.write_wav("online.wav", y_online, sr=sr)
-        librosa.output.write_wav("inference.wav", y_inference, sr=sr)
+        sf.write_wav("target.wav", x_org, sr)
+        sf.write_wav("online.wav", y_online, sr)
+        sf.write_wav("inference.wav", y_inference, sr)
+

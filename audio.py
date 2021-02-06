@@ -63,8 +63,11 @@ def start_and_end_indices(quantized, silence_threshold=2):
 
     return start, end
 
+def preemphasis(wav):
+    return signal.lfilter([1, -0.97], [1], wav)
 
 def melspectrogram(y):
+    y = preemphasis(y)
     D = _lws_processor().stft(y).T
     S = _amp_to_db(_linear_to_mel(np.abs(D))) - hparams.ref_level_db
     if not hparams.allow_clipping_in_normalization:

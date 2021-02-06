@@ -200,3 +200,7 @@ Temporary Items
 # Pretrained model
 20180510_mixture_lj_checkpoint_step000320000_ema.json
 20180510_mixture_lj_checkpoint_step000320000_ema.pth
+ckpt/*
+
+# ETC
+*.wav

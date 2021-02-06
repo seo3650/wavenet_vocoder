@@ -58,6 +58,7 @@ from wavenet_vocoder.mixture import sample_from_discretized_mix_logistic
 
 import audio
 from hparams import hparams, hparams_debug_string
+import soundfile as sf
 
 fs = hparams.sample_rate
 
@@ -540,9 +541,9 @@ def eval_model(global_step, writer, device, model, y, c, g, input_lengths, eval_
     # Save audio
     os.makedirs(eval_dir, exist_ok=True)
     path = join(eval_dir, "step{:09d}_predicted.wav".format(global_step))
-    librosa.output.write_wav(path, y_hat, sr=hparams.sample_rate)
+    sf.write_wav(path, y_hat, hparams.sample_rate)
     path = join(eval_dir, "step{:09d}_target.wav".format(global_step))
-    librosa.output.write_wav(path, y_target, sr=hparams.sample_rate)
+    sf.write_wav(path, y_target, hparams.sample_rate)
 
     # save figure
     path = join(eval_dir, "step{:09d}_waveplots.png".format(global_step))
@@ -588,9 +589,11 @@ def save_states(global_step, writer, y_hat, y, input_lengths, checkpoint_dir=Non
     audio_dir = join(checkpoint_dir, "audio")
     os.makedirs(audio_dir, exist_ok=True)
     path = join(audio_dir, "step{:09d}_predicted.wav".format(global_step))
-    librosa.output.write_wav(path, y_hat, sr=hparams.sample_rate)
+    # librosa.output.write_wav(path, y_hat, sr=hparams.sample_rate)
+    sf.write_wav(path, y_hat, hparams.sample_rate)
     path = join(audio_dir, "step{:09d}_target.wav".format(global_step))
-    librosa.output.write_wav(path, y, sr=hparams.sample_rate)
+    # librosa.output.write_wav(path, y, sr=hparams.sample_rate)
+    sf.write_wav(path, y, hparams.sample_rate)
 
 
 def __train_step(device, phase, epoch, global_step, global_test_step,
@@ -649,8 +652,9 @@ def __train_step(device, phase, epoch, global_step, global_test_step,
         loss = criterion(y_hat[:, :, :-1], y[:, 1:, :], mask=mask)
 
     if train and step > 0 and step % hparams.checkpoint_interval == 0:
-        save_states(step, writer, y_hat, y, input_lengths, checkpoint_dir)
         save_checkpoint(device, model, optimizer, step, checkpoint_dir, epoch, ema)
+        if (step % (hparams.checkpoint_interval * 10) == 0):
+            save_states(step, writer, y_hat, y, input_lengths, checkpoint_dir)
 
     if do_eval:
         # NOTE: use train step (i.e., global_step) for filename
@@ -904,6 +908,7 @@ def get_data_loaders(data_root, speaker_id, test_shuffle=True):
 
 
 if __name__ == "__main__":
+    print('Try2')
     args = docopt(__doc__)
     print("Command line args:\n", args)
     checkpoint_dir = args["--checkpoint-dir"]

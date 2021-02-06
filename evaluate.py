@@ -26,6 +26,7 @@ from nnmnkwii import preprocessing as P
 from keras.utils import np_utils
 from tqdm import tqdm
 import librosa
+import soundfile as sf
 
 
 from wavenet_vocoder.util import is_mulaw_quantize, is_mulaw, is_raw
@@ -122,12 +123,12 @@ if __name__ == "__main__":
                            fast=True, tqdm=_tqdm)
 
         # save
-        librosa.output.write_wav(dst_wav_path, waveform, sr=hparams.sample_rate)
+        sf.write(dst_wav_path, waveform, hparams.sample_rate)
         if is_mulaw_quantize(hparams.input_type):
             x = P.inv_mulaw_quantize(x, hparams.quantize_channels)
         elif is_mulaw(hparams.input_type):
             x = P.inv_mulaw(x, hparams.quantize_channels)
-        librosa.output.write_wav(target_wav_path, x, sr=hparams.sample_rate)
+        sf.write(target_wav_path, x, hparams.sample_rate)
 
         # log
         if output_html:

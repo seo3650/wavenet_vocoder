@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
     # Load conditional features
     if conditional_path is not None:
-        c = np.load(conditional_path)
+        c = np.load(conditional_path).squeeze()
         if c.shape[1] != hparams.num_mels:
             np.swapaxes(c, 0, 1)
         if max_abs_value > 0:
